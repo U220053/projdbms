@@ -1,0 +1,21 @@
+CREATE OR REPLACE FUNCTION reverse_number(p_number IN NUMBER) RETURN NUMBER IS
+  v_reversed NUMBER := 0;
+  v_temp NUMBER := p_number;
+BEGIN
+  WHILE v_temp > 0 LOOP
+    v_reversed := (v_reversed * 10) + (v_temp MOD 10);
+    v_temp := TRUNC(v_temp / 10);
+  END LOOP;
+  
+  RETURN v_reversed;
+END;
+/
+
+DECLARE
+  v_input_number NUMBER := 5639;
+  v_reversed_number NUMBER;
+BEGIN
+  v_reversed_number := reverse_number(v_input_number);
+  DBMS_OUTPUT.PUT_LINE('Reversed number: ' || v_reversed_number);
+END;
+/

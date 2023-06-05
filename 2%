@@ -1,0 +1,31 @@
+DECLARE
+  CURSOR c_movies IS
+    SELECT movie_id, price
+    FROM movies
+    WHERE genre IN ('Comedy', 'Thriller');
+    
+  v_movie_id movies.movie_id%TYPE;
+  v_price movies.price%TYPE;
+BEGIN
+  FOR movie IN c_movies LOOP
+    v_movie_id := movie.movie_id;
+    v_price := movie.price;
+    
+    
+    v_price := v_price + (v_price * 0.02);
+    
+    
+    UPDATE movies
+    SET price = v_price
+    WHERE movie_id = v_movie_id;
+  END LOOP;
+  
+  COMMIT;
+  
+  DBMS_OUTPUT.PUT_LINE('Movie prices updated successfully.');
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+    ROLLBACK; -- Rollback the changes if an error occurs
+END;
+/

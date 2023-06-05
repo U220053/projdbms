@@ -1,0 +1,49 @@
+1. Write a PL/SQL block of code that first withdraws an amount of Rs. 500. Then again
+withdraws Rs. 500. Now if the current balance of a specific account number is less than
+Rs. 1000 then undo the last withdraw just made.
+COMMANDS:
+create table Acc_details
+(
+Acc_No varchar2(8) primary key,
+Name varchar2(20) not null,
+Address varchar2(50) not null,
+DOB date not null,
+sex char(1) check (sex in ('M', 'F')),
+contact_no number(10) not null,
+last_trans_date date not null,
+Total_amt number(14,2) not null,
+Acc_status char(1) not null check(Acc_status in ('A', 'I'))
+);
+insert into Acc_details values('001', 'AMIT', 'BK-256', '12-JAN-2012', 'M', 9836773258,
+'13-JUN-2012', 12000, 'A');
+insert into Acc_details values('002', 'SUMIT', 'AB-125', '10-FEB-2012', 'M', 9830073258,
+'13-JAN-2012', 1500, 'A');
+insert into Acc_details values('003', 'RAMIT', 'BG-350', '25-JAN-2013', 'M', 9877363258,
+'15-JUL-2012', 10000, 'A');
+set serveroutput on
+declare
+n number(20);
+t number(20);
+amt number:=500;
+begin
+n:=&n;
+update Acc_details set Total_amt=Total_amt-amt where
+Acc_No=n;
+commit;
+savepoint s;
+update Acc_details set Total_amt=Total_amt-amt where
+Acc_No=n;
+select Total_amt into t from Acc_details where Acc_No=n;
+if(t < 1000) then
+dbms_output.put_line('Balance after 2nd Transaction = ' || t);
+dbms_output.put_line('!!!!! Insufficient Balance !!!! ');
+
+rollback to savepoint s;
+dbms_output.put_line('Balance after Rollback = ' || t);
+else
+commit;
+select Total_Amt into t from Acc_details where Acc_No=n;
+dbms_output.put_line('Balance after COMMIT = ' || t);
+end if;
+end;
+/

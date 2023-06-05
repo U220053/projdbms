@@ -1,0 +1,44 @@
+CREATE OR REPLACE FUNCTION get_prime_numbers(p_n IN NUMBER) RETURN SYS.ODCINUMBERLIST IS
+  v_prime_numbers SYS.ODCINUMBERLIST := SYS.ODCINUMBERLIST();
+  v_counter NUMBER := 0;
+  v_number NUMBER := 2;
+  v_is_prime BOOLEAN;
+BEGIN
+  WHILE v_counter < p_n LOOP
+    v_is_prime := TRUE;
+    
+   
+    FOR i IN 2..TRUNC(SQRT(v_number)) LOOP
+      IF v_number MOD i = 0 THEN
+        v_is_prime := FALSE;
+        EXIT;
+      END IF;
+    END LOOP;
+    
+    
+    IF v_is_prime THEN
+      v_prime_numbers.EXTEND;
+      v_prime_numbers(v_counter + 1) := v_number;
+      v_counter := v_counter + 1;
+    END IF;
+    
+    v_number := v_number + 1;
+  END LOOP;
+  
+  RETURN v_prime_numbers;
+END;
+/
+
+
+DECLARE
+  v_n NUMBER := 10; -- Number of prime numbers to display
+  v_prime_list SYS.ODCINUMBERLIST;
+BEGIN
+  v_prime_list := get_prime_numbers(v_n);
+  
+  DBMS_OUTPUT.PUT_LINE('First '  v_n  ' prime numbers:');
+  FOR i IN 1..v_prime_list.COUNT LOOP
+    DBMS_OUTPUT.PUT_LINE(v_prime_list(i));
+  END LOOP;
+END;
+/

@@ -1,0 +1,30 @@
+SET SERVEROUTPUT ON;
+CREATE OR REPLACE PROCEDURE display_fibonacci(n IN NUMBER) AS
+    fib1 NUMBER := 0;
+    fib2 NUMBER := 1;
+    fib3 NUMBER;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Fibonacci Series:');
+    DBMS_OUTPUT.PUT_LINE(fib1);
+
+    IF n > 1 THEN
+        DBMS_OUTPUT.PUT_LINE(fib2);
+    END IF;
+
+    FOR i IN 3..n LOOP
+        fib3 := fib1 + fib2;
+        DBMS_OUTPUT.PUT_LINE(fib3);
+        fib1 := fib2;
+        fib2 := fib3;
+    END LOOP;
+END;
+/
+
+
+
+DECLARE
+    n NUMBER := 10; -- Specify the value of 'n' as desired
+BEGIN
+    display_fibonacci(n);
+END;
+/

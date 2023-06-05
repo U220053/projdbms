@@ -1,0 +1,22 @@
+2. Write a PL/SQL block of code to update the location of specific department number
+that will be taken from user. Display an appropriate message using SQL%FOUND based
+on existence of the record in the Department table and display an appropriate message
+using SQL%NOTFOUND based on the non-existence of the record in Department Table.
+COMMANDS:
+
+
+select * from dept;
+set serveroutput on
+declare
+dno number:=&dno;
+loc1 varchar2(10):='&loc';
+begin
+update Dept set loc=loc1 where Deptno=dno;
+if sql%found then
+dbms_output.put_line(' The updated loc is ' || loc1);
+end if;
+if sql%notfound then
+dbms_output.put_line(' The updated loc is not found. ');
+end if;
+end;
+/
