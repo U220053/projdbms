@@ -1,0 +1,202 @@
+Create table Customer(
+Cust_id varchar2(10) primary key check(Cust_id like 'C%'),
+Fname varchar2(15),
+Lname varchar2(15),
+Area varchar2(5),
+Phone_no number(10) not null
+);
+Create table Movie(
+Mv_no varchar2(5) primary key check(Mv_no like 'M%'),
+Title varchar2(25),
+Type varchar2(10),
+Star varchar2(25),
+Price number(8,2)
+);
+Create table Invoice(
+Inv_no varchar2(10) primary key check(Inv_no like 'I%' ),
+Mv_no varchar2(5) references Movie,
+Cust_id varchar2(10) references Customer,
+Issue_date Date,
+Return_date Date
+);
+insert into Customer values ('C01','Bayross','Ivan','sa',6125467);
+insert into Customer values ('C02','Saitwal','Vandana','mu',5560379);
+insert into Customer values ('C03','Jaguste','Pramada','da',4563891);
+insert into Customer values ('C04','Navindgi','Basu','ba',6125401);
+insert into Customer values ('C06','Koushik ','Rukmini','gh',5125274);
+insert into movie values ('M001','bloody vengeance','action','jackie chan',180.95);
+insert into movie values ('M002','the firm','thriller','tom cruise',200.00);
+insert into movie values ('M003','pretty woman','romance','richard gere',200.00);
+insert into movie values ('M004','home alone','comedy','macaulay culkin',150);
+insert into movie values ('M005','the fugitive','thriller','harisson ford',200.00);
+insert into movie values ('M006','coma','suspense','michael douglas',100.00);
+insert into movie values ('M007','dracula','horror','gary oldman',150.25);
+insert into movie values ('M008','quick change','comedy','bill muray',100.00);
+insert into movie values ('M009','gone with the wind','drama','clarke gable',200.00);
+insert into movie values ('M010','carry on doctor','comedy','leslie phillips',100.00);
+insert into invoice values ('I01','M004','C01','23-jul-93','25-jul-93');
+insert into invoice values ('I02','M003','C02','12-aug-93','15-aug-93');
+insert into invoice values ('I03','M001','C02','15-aug-93','18-aug-93');
+insert into invoice values ('I04','M006','C03','10-sep-93','12-sep-93');
+insert into invoice values ('I05','M007','C04','05-aug-93','08-aug-93');
+insert into invoice values ('I06','M002','C06','18-sep-93','21-sep-93');
+insert into invoice values ('I07','M009','C05','07-jul-93','10-jul-93');
+insert into invoice values ('I08','M009','C01','11-aug-93','14-aug-93');
+insert into invoice values ('I09','M005','C03','06-jul-93','07-jul-93');
+insert into invoice values ('I10','M008','C06','03-sep-93','06-sep-93');
+A. Print the type and average price of each movie.
+SQL> select type from movie;
+TYPE
+----------
+action
+thriller
+romance
+comedy
+thriller
+suspense
+horror
+comedy
+drama
+comedy
+10 rows selected.
+SQL> select avg(price) from movie;
+AVG(PRICE)
+----------
+ 158.12
+B. Find out the movie number which has been issued to ‘Bayross’.
+SQL> select Mv_no from Invoice where Cust_id='C01';
+MV_NO
+-----
+M004
+M009
+C. Find out which customer has been issued movie number ‘M009’.
+SQL> select fname from customer where cust_id in(select cust_id from invoice
+where mv_no='M009');
+FNAME
+---------------
+Bayross
+D. Display the invoice number and day on which customers were issued movies.
+SQL> select inv_no,issue_date from invoice;
+INV_NO ISSUE_DAT
+---------- ---------
+I01 23-JUL-93
+I02 12-AUG-93
+I03 15-AUG-93
+I04 10-SEP-93
+I05 05-AUG-93
+I06 18-SEP-93
+I08 11-AUG-93
+I09 06-JUL-93
+I10 03-SEP-93
+9 rows selected.
+E. Change the telephone number of Koushik to 466389.
+update Customer set Phone_no=466389 where Fname='Koushik';
+A. Find the number of movies in each type.
+SQL> select type,count(type) from movie group by type;
+TYPE COUNT(TYPE)
+---------- -----------
+action 1
+thriller 2
+romance 1
+comedy 3
+suspense 1
+horror 1
+drama 1
+7 rows selected.
+B. Find the names and movie numbers of all the customers who have been issued a movie.
+SQL> select fname,lname,mv_no from customer,invoice where
+invoice.cust_id=customer.cust_id;
+FNAME LNAME MV_NO
+--------------- --------------- -----
+Bayross Ivan M004
+Saitwal Vandana M003
+Saitwal Vandana M001
+Jaguste Pramada M006
+Navindgi Basu M007
+Koushik Rukmini M002
+Bayross Ivan M009
+Jaguste Pramada M005
+Koushik Rukmini M008
+9 rows selected.
+C. Find the Customer name and area with invoice number ‘I010’.
+SQL> select fname,lname,area from Customer where cust_id
+in(select cust_id from invoice where inv_no='I10');
+FNAME LNAME AREA
+--------------- --------------- -----
+Koushik Rukmini gh
+D. Display the months (in alphabets) in which customers are supposed to return the movie.
+SQL> select to_char(return_date,'dd-month-yy')from invoice;
+TO_CHAR(RETURN_DATE,'DD-MONTH-YY')
+------------------------------------------
+25-july -93
+15-august -93
+18-august -93
+12-september-93
+08-august -93
+21-september-93
+14-august -93
+07-july -93
+06-september-93
+9 rows selected.
+E. Change the issue date of customer id ‘C101’ to 24/07/93.
+SQL> update invoice set issue_date='24-jul-93' where cust_id='C01';
+2 rows updated.
+SQL> select * from invoice;
+INV_NO MV_NO CUST_ID ISSUE_DAT RETURN_DA
+---------- ----- ---------- --------- ---------
+I01 M004 C01 24-JUL-93 25-JUL-93
+I02 M003 C02 12-AUG-93 15-AUG-93
+I03 M001 C02 15-AUG-93 18-AUG-93
+I04 M006 C03 10-SEP-93 12-SEP-93
+I05 M007 C04 05-AUG-93 08-AUG-93
+I06 M002 C06 18-SEP-93 21-SEP-93
+I08 M009 C01 24-JUL-93 14-AUG-93
+I09 M005 C03 06-JUL-93 07-JUL-93
+I10 M008 C06 03-SEP-93 06-SEP-93
+9 rows selected.
+A. Calculate the average price of all movies where type is ‘Comedy’ or ‘Thriller’ and price is greater than or
+equal to 150.00.
+SQL> select type,avg(price) from movie where price>=150 group by type having
+type in ('comedy','thriller');
+TYPE AVG(PRICE)
+---------- ----------
+thriller 200
+comedy 150
+B. Find the names of customers who have been issued movie of type ‘drama’.
+SQL> select fname,lname from customer where cust_id in (select cust_id from
+invoice where mv_no in (select mv_no from movie where type = 'drama'));
+FNAME LNAME
+--------------- ---------------
+Bayross Ivan
+C. Find out the movie starring ‘Tom Crusie’ is issued to any customer and print the cust_id to whom it is
+issued.
+SQL> select cust_id from Customer where cust_id in (select cust_id from invoice
+where mv_no in (select mv_no from movie where star='tom cruise'));
+CUST_ID
+----------
+C06
+D. Find the number of days elapsed between the current date and return date of the movie for all customers.
+SQL> select sysdate-return_date from invoice;
+SYSDATE-RETURN_DATE
+-------------------
+ 10903.0202
+ 10882.0202
+ 10879.0202
+ 10854.0202
+ 10889.0202
+ 10845.0202
+ 10883.0202
+ 10921.0202
+ 10860.0202
+9 rows selected.
+E. Change the area of cust_id ‘C005’ to ‘vs’.
+SQL> update Customer set area='vs' where cust_id='C04';
+1 row updated.
+SQL> select * from Customer;
+CUST_ID FNAME LNAME AREA PHONE_NO
+---------- --------------- --------------- ----- ----------
+C01 Bayross Ivan sa 6125467
+C02 Saitwal Vandana mu 5560379
+C03 Jaguste Pramada da 4563891
+C04 Navindgi Basu vs 6125401
+C06 Koushik Rukmini gh 5125274
